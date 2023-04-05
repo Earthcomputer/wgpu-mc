@@ -8,15 +8,17 @@
 //! Minecraft splits chunks into 16-block tall pieces called chunk sections, for
 //! rendering purposes.
 
+use arc_swap::ArcSwap;
+use parking_lot::{Mutex, RwLock};
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::Arc;
-use arc_swap::ArcSwap;
-use parking_lot::{Mutex, RwLock};
 use wgpu::util::{BufferInitDescriptor, DeviceExt};
 use wgpu::BufferUsages;
 
-use crate::mc::block::{BlockMeshVertex, BlockstateKey, ChunkBlockState, CubeOrComplexMesh, ModelMesh};
+use crate::mc::block::{
+    BlockMeshVertex, BlockstateKey, ChunkBlockState, CubeOrComplexMesh, ModelMesh,
+};
 use crate::mc::BlockManager;
 use crate::render::pipeline::Vertex;
 
@@ -136,9 +138,11 @@ impl Chunk {
 fn block_add_face_vertices<T, Mapper: Fn(&BlockMeshVertex, f32, f32, f32) -> T>(
     mapper: Mapper,
     vertices: &mut Vec<T>,
-    x: i32, y: i16, z: i32,
-    face_vertices: &Option<[BlockMeshVertex; 6]>)
-{
+    x: i32,
+    y: i16,
+    z: i32,
+    face_vertices: &Option<[BlockMeshVertex; 6]>,
+) {
     match face_vertices {
         None => {}
         Some(north) => vertices.extend(
@@ -151,11 +155,14 @@ fn block_add_face_vertices<T, Mapper: Fn(&BlockMeshVertex, f32, f32, f32) -> T>(
 
 /// Returns true when blocks adjacent to the one at (x, y, z) should render their faces.
 #[inline]
-fn should_render_face(block_manager: &BlockManager, state_provider: &impl BlockStateProvider, x: i32, y: i16, z: i32) -> bool {
-    let state = get_block(
-        block_manager,
-        state_provider.get_state(x, y, z),
-    );
+fn should_render_face(
+    block_manager: &BlockManager,
+    state_provider: &impl BlockStateProvider,
+    x: i32,
+    y: i16,
+    z: i32,
+) -> bool {
+    let state = get_block(block_manager, state_provider.get_state(x, y, z));
 
     match state {
         Some(mesh) => mesh.models[0].1,
@@ -238,7 +245,6 @@ pub fn bake_layer<
 
         match &mesh.models[0].0 {
             CubeOrComplexMesh::Cube(model) => {
-
                 let baked_should_render_face = |x_: i32, y_: i16, z_: i32| {
                     should_render_face(block_manager, state_provider, x_, y_, z_)
                 };
@@ -250,16 +256,29 @@ pub fn bake_layer<
                 let render_south = baked_should_render_face(absolute_x, y, absolute_z + 1);
                 let render_north = baked_should_render_face(absolute_x, y, absolute_z - 1);
 
-                let mut baked_block_add_face_vertices = |face_vertices: &Option<[BlockMeshVertex; 6]>| {
-                    block_add_face_vertices(&mapper, &mut vertices, x, y, z, face_vertices);
-                };
+                let mut baked_block_add_face_vertices =
+                    |face_vertices: &Option<[BlockMeshVertex; 6]>| {
+                        block_add_face_vertices(&mapper, &mut vertices, x, y, z, face_vertices);
+                    };
 
-                if render_north { baked_block_add_face_vertices(&model.north); }
-                if render_east { baked_block_add_face_vertices(&model.east); }
-                if render_south { baked_block_add_face_vertices(&model.south); }
-                if render_west { baked_block_add_face_vertices(&model.west); }
-                if render_up { baked_block_add_face_vertices(&model.up); }
-                if render_down { baked_block_add_face_vertices(&model.down); }
+                if render_north {
+                    baked_block_add_face_vertices(&model.north);
+                }
+                if render_east {
+                    baked_block_add_face_vertices(&model.east);
+                }
+                if render_south {
+                    baked_block_add_face_vertices(&model.south);
+                }
+                if render_west {
+                    baked_block_add_face_vertices(&model.west);
+                }
+                if render_up {
+                    baked_block_add_face_vertices(&model.up);
+                }
+                if render_down {
+                    baked_block_add_face_vertices(&model.down);
+                }
             }
             CubeOrComplexMesh::Complex(model) => {
                 vertices.extend(

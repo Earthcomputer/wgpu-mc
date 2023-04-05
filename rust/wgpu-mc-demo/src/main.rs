@@ -4,11 +4,10 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::{Instant};
+use std::time::Instant;
 
 use crate::camera::Camera;
 use arc_swap::ArcSwap;
-
 
 use futures::executor::block_on;
 use parking_lot::RwLock;
@@ -23,9 +22,7 @@ use wgpu_mc::render::pipeline::Vertex;
 use wgpu_mc::render::shaderpack::{Mat4, Mat4ValueOrMult};
 use wgpu_mc::util::BindableBuffer;
 
-use wgpu_mc::wgpu::{
-    BufferUsages,
-};
+use wgpu_mc::wgpu::BufferUsages;
 use wgpu_mc::{wgpu, HasWindowSize, WindowSize, WmRenderer};
 use winit::event::{DeviceEvent, ElementState, Event, KeyboardInput, VirtualKeyCode, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};

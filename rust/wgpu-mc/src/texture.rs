@@ -71,6 +71,7 @@ impl TextureSamplerView {
             usage: wgpu::TextureUsages::COPY_DST
                 | wgpu::TextureUsages::RENDER_ATTACHMENT
                 | wgpu::TextureUsages::TEXTURE_BINDING,
+            view_formats: &[],
         });
 
         if !bytes.is_empty() {

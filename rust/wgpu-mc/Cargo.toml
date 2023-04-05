@@ -6,13 +6,13 @@ edition = "2021"
 
 [dependencies]
 # if you upgrade this, also change WmRenderer::get_backend_description in wgpu-mc/src/lib.rs
-wgpu = { version = "0.14.2", features = ["glsl"] }
+wgpu = { version = "0.15.1", features = ["glsl"] }
 image = "0.24"
 cgmath = "0.18"
-naga = "0.10.0"
+naga = "0.11.0"
 bytemuck = { version = "1.4", features = ["derive"] }
 anyhow = "1.0"
-winit = "0.27.4"
+winit = "0.28.3"
 serde = "1.0.123"
 serde_bytes = "0.11.5"
 serde_json = "1.0.62"

@@ -56,7 +56,7 @@ use wgpu::{
 use crate::mc::resource::ResourceProvider;
 use crate::mc::MinecraftState;
 use crate::render::atlas::Atlas;
-use crate::render::graph::{GeometryCallback, ShaderGraph};
+use crate::render::graph::ShaderGraph;
 use crate::render::pipeline::{WmPipelines, BLOCK_ATLAS, ENTITY_ATLAS};
 use crate::texture::{BindableTexture, TextureHandle, TextureSamplerView};
 
@@ -106,9 +106,12 @@ impl WmRenderer {
     ) -> WgpuState {
         let size = window.get_window_size();
 
-        let instance = wgpu::Instance::new(wgpu::Backends::PRIMARY);
+        let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
+            backends: wgpu::Backends::PRIMARY,
+            ..Default::default()
+        });
 
-        let surface = unsafe { instance.create_surface(window) };
+        let surface = unsafe { instance.create_surface(window) }.unwrap();
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference: wgpu::PowerPreference::HighPerformance,
@@ -148,6 +151,7 @@ impl WmRenderer {
                 wgpu::PresentMode::AutoNoVsync
             },
             alpha_mode: CompositeAlphaMode::Auto,
+            view_formats: Vec::new(),
         };
 
         surface.configure(&device, &surface_config);

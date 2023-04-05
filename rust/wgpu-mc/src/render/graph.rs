@@ -370,7 +370,12 @@ impl ShaderGraph {
     }
 
     /// Matches on the definition, inserting the resource depending on which variant it is.
-    fn insert_resources(wm: &&WmRenderer, resources: &mut HashMap<String, CustomResource>, definition: &ShorthandResourceConfig, resource_id: String) {
+    fn insert_resources(
+        wm: &&WmRenderer,
+        resources: &mut HashMap<String, CustomResource>,
+        definition: &ShorthandResourceConfig,
+        resource_id: String,
+    ) {
         match definition {
             ShorthandResourceConfig::Int(int) => {
                 let ssbo = BindableBuffer::new(
